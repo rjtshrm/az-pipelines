@@ -1,0 +1,75 @@
+trigger:
+- main
+- feature/*
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+  pool: default
+  test: null
+
+
+stages:
+
+- stage: Build
+  displayName: Build
+  pool: 
+    name: $(pool)
+  jobs:
+    - template: azure-pipelines/ci/sonar-code-analysis.yaml
+      parameters:
+        SonarQube: 'SonarQube_Analysis'
+        organization: 'rjtrjtshrm94'
+        scannerMode: 'cli'
+        configMode: 'manual'
+        cliProjectKey: 'rjt.rjtshrm94_MicroService'
+        cliProjectName: 'MicroService'
+        cliSources: '.'
+        pollingTimeoutSec: '300'
+    - template: azure-pipelines/ci/snyk-code-security-analysis.yaml
+      parameters:
+        serviceConnectionEndpoint: 'Snyk_Analysis'
+        testType: 'code'
+        codeSeverityThreshold: 'high'
+        failOnIssues: true
+        projectName: '$(Build.Repository.Name)'
+        organization: 'rjt.rjtshrm94'
+    - template: azure-pipelines/ci/docker-build.yaml
+      parameters:
+        tag: $(tag)
+        
+- stage: Test
+  displayName: Test
+  jobs:
+    - job: Test
+      displayName: Test
+      pool: 
+        name: $(pool)
+      steps:
+        - task: CmdLine@2
+          inputs:
+            script: 'echo "Testing"'
+
+- stage: Deploy
+  displayName: Deploy
+  pool: 
+    name: default
+  jobs:
+  - job:
+    steps:
+    - task: HelmDeploy@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: 'k8'
+        azureSubscriptionForACR: 'Free Trial(89449e9c-294c-4edc-9bb8-c5168253b160)'
+        azureResourceGroupForACR: 'Containers_RG'
+        azureContainerRegistry: 'uservice.azurecr.io'
+        namespace: 'default'
+        command: 'upgrade'
+        chartType: 'Name'
+        chartName: 'oci://uservice.azurecr.io/helm/uservice'
+        chartVersion: '0.1.0'
+        releaseName: 'nginx'
+        overrideValues: 'image.tag=latest'
