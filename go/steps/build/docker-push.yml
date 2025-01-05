@@ -1,0 +1,20 @@
+
+parameters:
+  - name: repository
+    type: string
+  - name: tag
+    type: string
+    default: '$(Build.BuildId)'
+  - name: containerRegistry
+    type: string
+
+
+steps:
+- task: Docker@2
+  displayName: Push an image
+  inputs:
+    containerRegistry: ${{ parameters.containerRegistry }}
+    repository: ${{ parameters.repository }}
+    command: buildAndPush
+    tags: |
+      ${{ parameters.tag }}

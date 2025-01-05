@@ -1,0 +1,18 @@
+
+parameters:
+  - name: repository
+    type: string
+  - name: tag
+    type: string
+    default: '$(Build.BuildId)'
+
+
+steps:
+- task: Docker@2
+  displayName: Build an image
+  inputs:
+    repository: ${{ parameters.repository }}
+    command: build
+    dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+    tags: |
+      ${{ parameters.tag }}

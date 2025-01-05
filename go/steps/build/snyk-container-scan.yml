@@ -1,0 +1,35 @@
+parameters:
+  - name: serviceConnectionEndpoint
+    type: string
+    default: 'Snyk_Analysis'
+  - name: severityThreshold
+    type: string
+    default: 'low'
+  - name: failOnIssues
+    type: boolean
+    default: false
+  - name: projectName
+    type: string
+    default: '$(Build.Repository.Name)'
+  - name: organization
+    type: string
+    default: 'rjt.rjtshrm94'
+  - name: repository
+    type: string
+  - name: tag
+    type: string
+    default: '$(Build.BuildId)'
+
+
+
+steps:
+- task: SnykSecurityScan@1
+  displayName: Code Analysis
+  inputs:
+    serviceConnectionEndpoint: ${{ parameters.serviceConnectionEndpoint }}
+    testType: 'container'
+    severityThreshold: ${{ parameters.severityThreshold }}
+    dockerImageName: '${{ parameters.repository }}:${{ parameters.tag }}'
+    dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+    monitorWhen: 'always'
+    failOnIssues: ${{ parameters.failOnIssues }}

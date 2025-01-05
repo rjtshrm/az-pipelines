@@ -1,0 +1,44 @@
+parameters:
+  - name: serviceConnectionEndpoint
+    type: string
+    default: 'Snyk_Analysis'
+  - name: severityThreshold
+    type: string
+    default: 'low'
+  - name: failOnIssues
+    type: boolean
+    default: false
+  - name: projectName
+    type: string
+    default: '$(Build.Repository.Name)'
+  - name: organization
+    type: string
+    default: 'rjt.rjtshrm94'
+  - name: GoVersion
+    type: string
+    default: '1.23.4'
+
+
+
+steps:
+- task: GoTool@0
+  displayName: Initialize Go Project
+  inputs:
+    version: ${{ parameters.GoVersion }}
+- script: |
+    ls $(GOPATH)
+    ls $(GOBIN)
+    set -e -x
+    mkdir -p '$(GOPATH)/bin'
+    echo '##vso[task.prependpath]$(GOPATH)/bin'
+    echo '##vso[task.prependpath]$(GOBIN)'
+  displayName: 'Create Go Workspace'
+- task: SnykSecurityScan@1
+  displayName: App Analysis
+  inputs:
+    serviceConnectionEndpoint: ${{ parameters.serviceConnectionEndpoint }}
+    testType: 'app'
+    severityThreshold: ${{ parameters.severityThreshold }}
+    failOnIssues: ${{ parameters.failOnIssues }}
+    #projectName: ${{ parameters.projectName }}
+    #organization: ${{ parameters.organization }}

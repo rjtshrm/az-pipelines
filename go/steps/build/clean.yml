@@ -1,0 +1,13 @@
+
+
+parameters:
+  - name: tag
+    type: string
+    default: '$(Build.BuildId)'
+
+
+steps:
+- task: CmdLine@2
+  displayName: Clean docker resources
+  inputs:
+    script: 'docker system prune -a --force' 

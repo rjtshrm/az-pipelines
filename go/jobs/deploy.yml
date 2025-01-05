@@ -1,0 +1,12 @@
+parameters:
+  - name: environment
+    type: string
+  
+
+jobs:
+- job: Deployment${{ parameters.environment }}
+  displayName: Deployment ${{ parameters.environment }}
+  steps:
+  - template: ../steps/deploy/deploy.yml
+    parameters:
+      environment: ${{ parameters.environment }}

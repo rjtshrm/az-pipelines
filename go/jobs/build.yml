@@ -1,0 +1,28 @@
+parameters:
+  - name: repository
+    type: string
+  - name: tag
+    type: string
+    default: '$(Build.BuildId)'
+  - name: containerRegistry
+    type: string
+    default: 'uservice'
+
+jobs:
+- job: Build
+  displayName: Build
+  steps:
+  - template: ../steps/build/docker-build.yml
+    parameters:
+      repository: ${{ parameters.repository }}
+      tag: ${{ parameters.tag }}
+  - template: ../steps/build/snyk-container-scan.yml
+    parameters:
+      repository: ${{ parameters.repository }}
+      tag: ${{ parameters.tag }}
+  - template: ../steps/build/docker-push.yml
+    parameters:
+      containerRegistry: ${{ parameters.containerRegistry }}
+      repository: ${{ parameters.repository }}
+      tag: ${{ parameters.tag }}
+  - template: ../steps/build/clean.yml

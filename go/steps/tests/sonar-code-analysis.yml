@@ -1,0 +1,43 @@
+
+parameters:
+  - name: SonarQube
+    type: string
+    default: 'SonarQube_Analysis'
+  - name: organization
+    type: string
+    default: 'rjtrjtshrm94'
+  - name: scannerMode
+    type: string
+    default: 'cli'
+  - name: configMode
+    type: string
+    default: 'manual'
+  - name: cliProjectKey
+    type: string
+    default: 'rjtrjtshrm94_MicroService'
+  - name: cliProjectName
+    type: string
+    default: 'MicroService'
+  - name: cliSources
+    type: string
+    default: '.'
+  - name: pollingTimeoutSec
+    type: string
+    default: '300'
+
+
+steps:
+- task: SonarCloudPrepare@3
+  displayName: SonarCloud Prepare
+  inputs:
+    SonarQube: ${{ parameters.SonarQube }}
+    organization: ${{ parameters.organization }}
+    scannerMode: ${{ parameters.scannerMode }}
+    configMode: ${{ parameters.configMode }}
+    cliProjectKey: ${{ parameters.cliProjectKey }}
+    cliProjectName: ${{ parameters.cliProjectName }}
+    cliSources: ${{ parameters.cliSources }}
+- task: SonarCloudAnalyze@3
+- task: SonarCloudPublish@3
+  inputs:
+    pollingTimeoutSec: ${{ parameters.pollingTimeoutSec }}

@@ -1,0 +1,29 @@
+parameters:
+  - name: GoVersion
+    type: string
+    default: '1.23.4'
+
+jobs:
+- job: CodeAnalysis
+  displayName: Code Analysis (Code Quality & Security)
+  variables:
+    GOBIN: '$(GOPATH)/bin'
+    GOPATH: '$(Agent.TempDirectory)/gopath'
+    disable.coverage.autogenerate: 'false'
+  steps:
+  - template: ../steps/tests/sonar-code-analysis.yml
+  - template: ../steps/tests/snyk-app-security-analysis.yml
+    parameters:
+      GoVersion: ${{ parameters.GoVersion }}
+
+- job: IntegrationsTest
+  displayName: Integrations Test
+  dependsOn: CodeAnalysis
+  variables:
+    GOBIN: '$(GOPATH)/bin'
+    GOPATH: '$(Agent.TempDirectory)/gopath'
+    disable.coverage.autogenerate: 'false'
+  steps:
+  - template: ../steps/tests/integrations.yml
+    parameters:
+      GoVersion: ${{ parameters.GoVersion }}
