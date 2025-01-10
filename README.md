@@ -17,7 +17,7 @@ The pipeline template library simplifies the creation and management of CI/CD pi
 
 **Template Structure:**
 
-The repository [az-pipelines-golang](https://github.com/rjtshrm/az-pipelines-golang.git) contains pipeline templates specifically designed for Go projects. The directory structure is as follows:
+The repository [https://github.com/rjtshrm/az-pipelines-go](https://github.com/rjtshrm/az-pipelines-go) contains pipeline templates specifically designed for Go projects. The directory structure is as follows:
 
 ```plaintext
 
